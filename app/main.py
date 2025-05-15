@@ -1,4 +1,3 @@
-
 from fastapi import FastAPI, File, UploadFile
 from app.utils import extract_units_from_inp, convert_to_si, save_results
 from app.wntr_runner import run_simulation
@@ -9,12 +8,19 @@ app = FastAPI()
 
 @app.post("/upload")
 def upload_txt(file: UploadFile = File(...)):
-    txt = file.file.read().decode("utf-8")
-    inp_text = validate_and_convert_txt(txt)
-    path = tempfile.mkstemp(suffix=".inp")[1]
-    with open(path, 'w') as f:
-        f.write(inp_text)
-    return {"inp_path": path}
+    try:
+        txt = file.file.read().decode("utf-8")
+        if not txt.strip():
+            return {"error": "Uploaded file is empty."}
+        inp_text = validate_and_convert_txt(txt)
+        path = tempfile.mkstemp(suffix=".inp")[1]
+        with open(path, 'w') as f:
+            f.write(inp_text)
+        return {"inp_path": path}
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return {"error": str(e)}
 
 @app.post("/simulate")
 def simulate(inp_path: str):
@@ -27,3 +33,6 @@ def simulate(inp_path: str):
 @app.post("/query")
 def query_analysis(prompt: str):
     return ask_gpt_with_results(prompt)
+
+
+   
