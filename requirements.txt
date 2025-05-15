@@ -1,0 +1,7 @@
+fastapi
+openai
+uvicorn
+wntr
+pandas
+matplotlib
+python-dotenv
