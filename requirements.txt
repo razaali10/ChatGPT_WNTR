@@ -5,3 +5,4 @@ wntr
 pandas
 matplotlib
 python-dotenv
+python-multipart
