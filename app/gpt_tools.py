@@ -1,6 +1,5 @@
 import openai
 import os
-
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
 def validate_and_convert_txt(txt):
