@@ -31,3 +31,4 @@ def ask_gpt_with_results(prompt):
         temperature=0.4
     )
     return {"response": response["choices"][0]["message"]["content"]}
+
