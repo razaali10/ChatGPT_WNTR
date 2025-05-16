@@ -1,0 +1,55 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "EPANET-WNTR Simulation Tool",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://chatgpt-wntr.onrender.com"
+    }
+  ],
+  "paths": {
+    "/simulate_epanet_text": {
+      "post": {
+        "operationId": "simulate_epanet_text",
+        "summary": "Simulate from EPANET raw model text",
+        "description": "Send EPANET model text directly, simulate using WNTR, and receive performance output.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "content": {
+                    "type": "string",
+                    "description": "The plain text content of an EPANET .inp model"
+                  }
+                },
+                "required": ["content"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Simulation output and GPT-based summary",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "gpt_summary": { "type": "string" },
+                    "data_samples": { "type": "object" },
+                    "result_paths": { "type": "object" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
