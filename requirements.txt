@@ -6,4 +6,6 @@ pandas
 matplotlib
 python-dotenv
 python-multipart
+tabulate>=0.9
+
 
