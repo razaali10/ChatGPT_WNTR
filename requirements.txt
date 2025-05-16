@@ -1,8 +1,9 @@
 fastapi
-openai
 uvicorn
+openai==0.28
 wntr
 pandas
 matplotlib
 python-dotenv
 python-multipart
+
