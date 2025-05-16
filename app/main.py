@@ -1,31 +1,30 @@
-from fastapi import FastAPI, File, UploadFile
-from app.utils import extract_units_from_inp, convert_to_si, save_results
-from app.wntr_runner import run_simulation
-from app.gpt_tools import validate_and_convert_txt, ask_gpt_with_results
-import tempfile
+import openai
+import os
 
-app = FastAPI()
+openai.api_key = os.getenv("OPENAI_API_KEY")
 
-@app.post("/upload")
-def upload_txt(file: UploadFile = File(...)):
-    txt = file.file.read().decode("utf-8")
-    inp_text = validate_and_convert_txt(txt)
-    path = tempfile.mkstemp(suffix=".inp")[1]
-    with open(path, 'w') as f:
-        f.write(inp_text)
-    return {"inp_path": path}
+def validate_and_convert_txt(txt):
+    prompt = (
+        "You are a civil engineering assistant. A user has uploaded an EPANET model in plain text format.\n"
+        "Return ONLY the corrected and valid EPANET .inp file. Do NOT include markdown or explanations.\n"
+        f"{txt}"
+    )
+    response = openai.ChatCompletion.create(
+        model="gpt-4",
+        messages=[{"role": "user", "content": prompt}],
+        temperature=0
+    )
+    return response["choices"][0]["message"]["content"]
 
-@app.post("/simulate")
-def simulate(inp_path: str):
-    raw_results = run_simulation(inp_path)
-    unit_system = extract_units_from_inp(inp_path)
-    results_si = convert_to_si(raw_results, unit_system)
-    saved_paths = save_results(results_si)
-    return {"converted": True, "outputs": saved_paths}
+def ask_gpt_with_results(prompt):
+    response = openai.ChatCompletion.create(
+        model="gpt-4",
+        messages=[{"role": "user", "content": prompt}],
+        temperature=0.3
+    )
+    return response["choices"][0]["message"]["content"]
 
-@app.post("/query")
-def query_analysis(prompt: str):
-    return ask_gpt_with_results(prompt)
+
 
 
 
