@@ -1,5 +1,6 @@
 import pandas as pd
 import re
+import os
 
 def extract_units_from_inp(inp_path):
     with open(inp_path, "r") as f:
@@ -24,10 +25,18 @@ def convert_to_si(results, unit):
         "velocity": results.link["velocity"]
     }
 
-def save_results(results):
+def save_results(results, folder="results"):
     paths = {}
     for k, df in results.items():
-        path = f"/mnt/data/{k}_si.csv"
+        path = os.path.join(folder, f"{k}_si.csv")
         df.to_csv(path)
         paths[k] = path
     return paths
+
+def summarize_results_for_gpt(results, unit):
+    summary = f"EPANET simulation results in {unit} unit system:\n"
+    for name, df in results.items():
+        head = df.head(3).to_markdown()
+        summary += f"\n{name.upper()} Sample:\n{head}\n"
+    summary += "\nSummarize and analyze the system performance based on this data."
+    return summary
